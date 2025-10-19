@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Don't Blink!</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      font-size: 3em;
+      margin: 0.2em;
+    }
+    #eye {
+      width: 150px;
+      height: 150px;
+      background: white;
+      border-radius: 50%;
+      position: relative;
+      margin: 1em;
+    }
+    #pupil {
+      width: 40px;
+      height: 40px;
+      background: black;
+      border-radius: 50%;
+      position: absolute;
+      top: 55px;
+      left: 55px;
+    }
+    #message {
+      margin-top: 1em;
+      font-size: 1.5em;
+      color: #f33;
+    }
+    #score {
+      font-size: 1.2em;
+      margin-top: 0.5em;
+    }
+    button {
+      margin-top: 2em;
+      padding: 0.5em 1em;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      background: #0f9;
+      color: #111;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #0c6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Don't Blink!</h1>
+  <div id="eye">
+    <div id="pupil"></div>
+  </div>
+  <div id="score">Score: 0</div>
+  <div id="message"></div>
+  <button onclick="startGame()">Start Game</button>
+
+  <script>
+    let blinking = false;
+    let score = 0;
+    let gameInterval;
+    let reactionWindow = 1500; // ms
+    let timeoutId;
+
+    function startGame() {
+      document.getElementById("message").textContent = "";
+      document.getElementById("score").textContent = "Score: 0";
+      score = 0;
+      blinking = false;
+      document.getElementById("eye").style.background = "white";
+      gameInterval = setInterval(triggerBlinkEvent, 2000 + Math.random() * 2000);
+      window.addEventListener("keydown", handleBlink);
+      document.querySelector("button").disabled = true;
+    }
+
+    function triggerBlinkEvent() {
+      blinking = true;
+      document.getElementById("eye").style.background = "red";
+      timeoutId = setTimeout(() => {
+        if (blinking) {
+          endGame("You didn’t blink in time!");
+        }
+      }, reactionWindow);
+    }
+
+    function handleBlink(e) {
+      if (e.code !== "Space") return;
+
+      if (blinking) {
+        score++;
+        document.getElementById("score").textContent = "Score: " + score;
+        blinking = false;
+        document.getElementById("eye").style.background = "white";
+        clearTimeout(timeoutId);
+      } else {
+        endGame("You blinked too early!");
+      }
+    }
+
+    function endGame(reason) {
+      clearInterval(gameInterval);
+      blinking = false;
+      document.getElementById("eye").style.background = "white";
+      document.getElementById("message").textContent = reason + " Final Score: " + score;
+      window.removeEventListener("keydown", handleBlink);
+      document.querySelector("button").disabled = false;
+    }
+  </script>
+</body>
+</html>
